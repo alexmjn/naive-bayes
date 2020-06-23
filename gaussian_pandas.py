@@ -12,48 +12,76 @@ import pandas as pd
 # then iterate over the means and sds in the prediction model
 
 
-def gaussian_fit(naive_bayes, X, y):
+def gaussian_fit_pd(naive_bayes, X, y):
     # assert isinstance(naive_bayes, NaiveBayes), "Please pass a valid model"
     # assert isinstance(X, np.ndarray), "Please pass a valid numpy array."
     # assert X.shape[0] == y.shape[0], "The dimensions of the input do not match."
+
+    # get n, get classes
     n = X.shape[0]
     classes = y.unique()
+
+    # create empty lists to store class frequencies and sds/means
     class_freqs = []
     class_summary_dfs = []
-    X["target"] = y.values
-    # split our df by class
+    #this is altering X outside the scope of the function
+    X["target"] = y
+
+    # split our df by class -- we need to generate sds and means for each
+    # variable for each class.
+
     for class_type in classes:
         df_subclass = X[X["target"] == class_type]
-        class_freqs = df_subclass.shape[0] / n
-        class_freq.append(class_freqs)
+        class_freq = df_subclass.shape[0] / n
+        class_freqs.append(class_freq)
 
-        for col in df_subclass.columns:
+    # drop supervised column so we can generate sds and means without
+    # calculating these over the class column
 
+        df_subclass = df_subclass.drop(["target"], axis=1)
+        subclass_stds = df_subclass.std()
+        subclass_means = df_subclass.mean()
+        summary_df = pd.concat([subclass_means, subclass_stds], axis=1)
+        class_summary_dfs.append(summary_df)
+        print(class_summary_dfs)
 
-
-
-    sd = np.std(X, axis=1)
-    means = np.mean(X, axis=1)
-    classes = list(set(y))
-    class_probs = []
-    for classification in range(len(classes)):
-        freq = list(y).count(classification)/(y.shape[0])
-        class_probs.append(freq)
-
-    class_dict = dict(zip(classes, class_probs))
-    # wrap classes and class probs into a dictionary?
-
-    naive_bayes.classes = classes
-    naive_bayes.class_dict = class_dict
     naive_bayes.n = n
-    naive_bayes.sd = sd
-    naive_bayes.means = means
+    naive_bayes.classes = classes #titles
+    naive_bayes.class_freqs = class_freqs #frequences
+    naive_bayes.summary_dfs = class_summary_dfs #data frames with sd, mean
+    # for each class as a separate df
+    return naive_bayes
+
+def gaussian_numerator(obs, mean, sd):
+    """Implements probability density from Gaussian distribution
+
+    Takes an observed value of one feature/variable existing in the training set
+    and the sample mean and sample standard deviation of that variable as
+    calculated in the training set. Plugs that data into the formula for
+    normal/Gaussian distribution and returns a posterior probability density
+    for
+    observing this value for this feature under the assumption of a particular
+    class label.
+
+    An example would be: if we're using Naive Bayes to categorize a person as
+    male or female, this would be a helper function that generates one part
+    of the chain of independent feature posterior densities. Probability of
+    male = gaussian_numerator(observedf1, mean of feature 1 in training set,
+    sd of f1 in training set) multiplied across all features.
+    """
+    first_term = 1 / ((2 * math.pi * sd**2)**(1/2))
+    exponent = math*exp((-(obs - mean)**2)/(2 * sd**2))
+    return first_term * exponent
 
 def gaussian_predict(naive_bayes, X, y):
-    assert isinstance(naive_bayes, NaiveBayes), "Please pass a valid model"
-    assert isinstance(X, np.ndarray), "Please pass a valid numpy array."
-    assert X.shape[0] == y.shape[0], "The dimensions of the input do not match."
+    # assert isinstance(naive_bayes, NaiveBayes), "Please pass a valid model"
+    # assert isinstance(X, np.ndarray), "Please pass a valid numpy array."
+    # assert X.shape[0] == y.shape[0], "The dimensions of the input do not match."
 # assert classes, dict, n, sd, means exist
 # iterate across each feature
-    for i in x.shape[1]:
+  #  for class_cat in naive_bayes.classes:
 # generate posterior probability associated with each class
+    #    class_prior = class_freq[i]
+
+        # loop across columns. get
+    pass

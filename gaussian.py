@@ -32,3 +32,13 @@ def gaussian_fit(naive_bayes, X, y):
     naive_bayes.n = n
     naive_bayes.sd = sd
     naive_bayes.means = means
+
+def gaussian_predict(naive_bayes, X, y):
+    assert isinstance(naive_bayes, NaiveBayes), "Please pass a valid model"
+    assert isinstance(X, np.ndarray), "Please pass a valid numpy array."
+    assert X.shape[0] == y.shape[0], "The dimensions of the input do not match."
+# assert classes, dict, n, sd, means exist
+# iterate across each feature
+    for _ in X.shape[1]:
+# generate posterior probability associated with each class
+        return
