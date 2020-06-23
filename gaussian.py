@@ -1,4 +1,5 @@
 import numpy as np
+import math
 from naive_bayes import NaiveBayes
 # assert X and y are proper types
 # assert X and y are proportionately shaped
@@ -30,4 +31,4 @@ def gaussian_fit(naive_bayes, X, y):
     naive_bayes.class_dict = class_dict
     naive_bayes.n = n
     naive_bayes.sd = sd
-    naive_bayes.mean = means
+    naive_bayes.means = means
