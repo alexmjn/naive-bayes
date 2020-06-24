@@ -3,20 +3,13 @@ import math
 from naive_bayes import NaiveBayes
 import pandas as pd
 from functools import reduce
-# assert X and y are proper types
-# assert X and y are proportionately shaped
-# use y to get prior for predictions
-# get sample means and standard deviations (formula for sample,
-# # not population s.d)
-# self.means = means
-# self.sds = sds
-# then iterate over the means and sds in the prediction model
+from helper import gaussian_numerator
 
 
-def gaussian_fit_pd(naive_bayes, X, y):
-    # assert isinstance(naive_bayes, NaiveBayes), "Please pass a valid model"
-    # assert isinstance(X, np.ndarray), "Please pass a valid numpy array."
-    # assert X.shape[0] == y.shape[0], "The dimensions of the input do not match."
+def gaussian_fit(naive_bayes, X, y):
+    assert isinstance(naive_bayes, NaiveBayes), "Please pass a valid model"
+    assert isinstance(X, pd.DataFrame), "Please pass a valid data frame."
+    assert X.shape[0] == y.shape[0], "The dimensions of the input do not match."
 
     # get n, get classes
     n = X.shape[0]
@@ -53,42 +46,25 @@ def gaussian_fit_pd(naive_bayes, X, y):
     # for each class as a separate df
     return naive_bayes
 
-def gaussian_numerator(obs, mean, sd):
-    """Implements probability density from Gaussian distribution
-
-    Takes an observed value of one feature/variable existing in the training set
-    and the sample mean and sample standard deviation of that variable as
-    calculated in the training set. Plugs that data into the formula for
-    normal/Gaussian distribution and returns a posterior probability density
-    for
-    observing this value for this feature under the assumption of a particular
-    class label.
-
-    An example would be: if we're using Naive Bayes to categorize a person as
-    male or female, this would be a helper function that generates one part
-    of the chain of independent feature posterior densities. Probability of
-    male = gaussian_numerator(observedf1, mean of feature 1 in training set,
-    sd of f1 in training set) multiplied across all features.
-    """
-    first_term = 1 / ((2 * math.pi * sd**2)**(1/2))
-    exponent = math.exp((-(obs - mean)**2)/(2 * sd**2))
-    return first_term * exponent
-
 def gaussian_predict(naive_bayes, X, y):
+    """Use the fitted model object to calculate predictions for new items.
+
+    Takes a data frame of observed feature values and a data frame of targets
+    in order to predict the probabilities of classes.
+    """
     assert isinstance(naive_bayes, NaiveBayes), "Please pass a valid model"
     assert isinstance(X, pd.DataFrame), "Please pass a valid data frame."
-    # assert X.shape[0] == y.shape[0], "The dimensions of the input do not match."
-# assert classes, dict, n, sd, means exist
+    assert X.shape[0] == y.shape[0], "The dimensions of the input do not match."
     all_predictions = []
-    for k in range(y.shape[0]):
+    for i in range(y.shape[0]):
         class_preds = []
-        for i in range(len(naive_bayes.classes)):
+        for j in range(len(naive_bayes.classes)):
             probs = []
-            probs.append(naive_bayes.class_freqs[i])
-            for j in range(X.shape[1]):
-                obs = X.iloc[k][j]
-                mean = naive_bayes.summary_dfs[i][0][j]
-                sd = naive_bayes.summary_dfs[i][1][j]
+            probs.append(naive_bayes.class_freqs[j])
+            for k in range(X.shape[1]):
+                obs = X.iloc[i][k]
+                mean = naive_bayes.summary_dfs[j][0][k]
+                sd = naive_bayes.summary_dfs[j][1][k]
                 probs.append(gaussian_numerator(obs, mean, sd))
             class_prob = reduce(lambda x, y: x*y, probs)
             class_preds.append(class_prob)
@@ -96,3 +72,31 @@ def gaussian_predict(naive_bayes, X, y):
         max_class_index = class_preds.index(max(class_preds))
         all_predictions.append(naive_bayes.classes[max_class_index])
     return pd.Series(all_predictions), class_preds
+
+# to do - just initialize probs as the class frequency and multiply each time
+# instead of using a list.
+
+# take in integer class labels?
+
+# remove the need to take in y
+
+
+if __name__ == "__main__":
+    wiki_df = pd.DataFrame()
+    wiki_df["height"] = [6, 5.92, 5.58, 5.92, 5, 5.5, 5.42, 5.75]
+    wiki_df["weight"] = [180, 190, 170, 165, 100, 150, 130, 150]
+    wiki_df["foot_size"] = [12, 11, 12, 10, 6, 8, 7, 9]
+
+    wiki_target = pd.Series(["male", "male", "male", "male", "female", "female", "female", "female"])
+
+    naive_bayes = NaiveBayes()
+    naive_bayes = gaussian_fit(naive_bayes, wiki_df, wiki_target)
+
+    twiki_df = pd.DataFrame()
+    twiki_df["height"] = [6]
+    twiki_df["weight"] = [130]
+    twiki_df["foot_size"] = [8]
+    twiki_target = pd.Series(["male"])
+
+    print(gaussian_predict(naive_bayes, twiki_df, twiki_target))
+#    [6.197071843878093e-09, 0.0005377909183630022]
