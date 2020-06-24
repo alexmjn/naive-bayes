@@ -2,6 +2,7 @@ import numpy as np
 import math
 from naive_bayes import NaiveBayes
 import pandas as pd
+from functools import reduce
 # assert X and y are proper types
 # assert X and y are proportionately shaped
 # use y to get prior for predictions
@@ -70,7 +71,7 @@ def gaussian_numerator(obs, mean, sd):
     sd of f1 in training set) multiplied across all features.
     """
     first_term = 1 / ((2 * math.pi * sd**2)**(1/2))
-    exponent = math*exp((-(obs - mean)**2)/(2 * sd**2))
+    exponent = math.exp((-(obs - mean)**2)/(2 * sd**2))
     return first_term * exponent
 
 def gaussian_predict(naive_bayes, X, y):
@@ -83,5 +84,22 @@ def gaussian_predict(naive_bayes, X, y):
 # generate posterior probability associated with each class
     #    class_prior = class_freq[i]
 
-        # loop across columns. get
-    pass
+
+    # loop across columns. get
+    all_predictions = []
+    for k in y.shape[0]:
+        class_preds = []
+        for i in len(naive_bayes.classes):
+            probs = []
+            probs.append(naive_bayes.class_freqs[i])
+            for j in X.shape[1]:
+                obs = X[0][i]
+                mean = naive_bayes.summary_dfs[i][0][j]
+                sd = naive_bayes.summary_dfs[i][1][j]
+                probs.append(gaussian_numerator(obs, mean, sd))
+            class_prob = reduce(lambda x, y: x*y, probs)
+            class_preds.append(class_prob)
+
+        max_class_index = class_preds.index(max(class_preds))
+        all_predictions.append(naive_bayes.classes[max_class_index])
+    return pd.Series(all_predictions)
