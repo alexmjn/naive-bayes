@@ -1,3 +1,5 @@
+import math
+
 def gaussian_numerator(obs, mean, sd):
     """Implements probability density from Gaussian distribution
 

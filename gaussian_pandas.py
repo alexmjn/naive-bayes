@@ -55,19 +55,21 @@ def gaussian_predict(naive_bayes, X, y):
     assert isinstance(naive_bayes, NaiveBayes), "Please pass a valid model"
     assert isinstance(X, pd.DataFrame), "Please pass a valid data frame."
     assert X.shape[0] == y.shape[0], "The dimensions of the input do not match."
+
     all_predictions = []
     for i in range(y.shape[0]):
         class_preds = []
+
         for j in range(len(naive_bayes.classes)):
-            probs = []
-            probs.append(naive_bayes.class_freqs[j])
+            probs = naive_bayes.class_freqs[j]
+
             for k in range(X.shape[1]):
                 obs = X.iloc[i][k]
                 mean = naive_bayes.summary_dfs[j][0][k]
                 sd = naive_bayes.summary_dfs[j][1][k]
-                probs.append(gaussian_numerator(obs, mean, sd))
-            class_prob = reduce(lambda x, y: x*y, probs)
-            class_preds.append(class_prob)
+                probs = probs * gaussian_numerator(obs, mean, sd)
+
+            class_preds.append(probs)
 
         max_class_index = class_preds.index(max(class_preds))
         all_predictions.append(naive_bayes.classes[max_class_index])
@@ -80,6 +82,8 @@ def gaussian_predict(naive_bayes, X, y):
 
 # remove the need to take in y
 
+# print error metrics, at least accuracy
+# use if statement to take in y if desired and output accuracy if desired
 
 if __name__ == "__main__":
     wiki_df = pd.DataFrame()
@@ -93,10 +97,10 @@ if __name__ == "__main__":
     naive_bayes = gaussian_fit(naive_bayes, wiki_df, wiki_target)
 
     twiki_df = pd.DataFrame()
-    twiki_df["height"] = [6]
-    twiki_df["weight"] = [130]
-    twiki_df["foot_size"] = [8]
-    twiki_target = pd.Series(["male"])
+    twiki_df["height"] = [6, 6.5]
+    twiki_df["weight"] = [130, 185]
+    twiki_df["foot_size"] = [8, 11]
+    twiki_target = pd.Series(["male", "male"])
 
     print(gaussian_predict(naive_bayes, twiki_df, twiki_target))
 #    [6.197071843878093e-09, 0.0005377909183630022]
