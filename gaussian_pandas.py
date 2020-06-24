@@ -36,7 +36,8 @@ def gaussian_fit_pd(naive_bayes, X, y):
         class_freq = df_subclass.shape[0] / n
         class_freqs.append(class_freq)
 
-    # drop supervised column so we can generate sds and means without
+    # drop supervised column
+    #  so we can generate sds and means without
     # calculating these over the class column
 
         df_subclass = df_subclass.drop(["target"], axis=1)
@@ -44,7 +45,6 @@ def gaussian_fit_pd(naive_bayes, X, y):
         subclass_means = df_subclass.mean()
         summary_df = pd.concat([subclass_means, subclass_stds], axis=1)
         class_summary_dfs.append(summary_df)
-        print(class_summary_dfs)
 
     naive_bayes.n = n
     naive_bayes.classes = classes #titles
@@ -75,25 +75,18 @@ def gaussian_numerator(obs, mean, sd):
     return first_term * exponent
 
 def gaussian_predict(naive_bayes, X, y):
-    # assert isinstance(naive_bayes, NaiveBayes), "Please pass a valid model"
-    # assert isinstance(X, np.ndarray), "Please pass a valid numpy array."
+    assert isinstance(naive_bayes, NaiveBayes), "Please pass a valid model"
+    assert isinstance(X, pd.DataFrame), "Please pass a valid data frame."
     # assert X.shape[0] == y.shape[0], "The dimensions of the input do not match."
 # assert classes, dict, n, sd, means exist
-# iterate across each feature
-  #  for class_cat in naive_bayes.classes:
-# generate posterior probability associated with each class
-    #    class_prior = class_freq[i]
-
-
-    # loop across columns. get
     all_predictions = []
-    for k in y.shape[0]:
+    for k in range(y.shape[0]):
         class_preds = []
-        for i in len(naive_bayes.classes):
+        for i in range(len(naive_bayes.classes)):
             probs = []
             probs.append(naive_bayes.class_freqs[i])
-            for j in X.shape[1]:
-                obs = X[0][i]
+            for j in range(X.shape[1]):
+                obs = X.iloc[k][j]
                 mean = naive_bayes.summary_dfs[i][0][j]
                 sd = naive_bayes.summary_dfs[i][1][j]
                 probs.append(gaussian_numerator(obs, mean, sd))
@@ -102,4 +95,4 @@ def gaussian_predict(naive_bayes, X, y):
 
         max_class_index = class_preds.index(max(class_preds))
         all_predictions.append(naive_bayes.classes[max_class_index])
-    return pd.Series(all_predictions)
+    return pd.Series(all_predictions), class_preds
