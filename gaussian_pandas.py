@@ -97,9 +97,9 @@ if __name__ == "__main__":
     naive_bayes = gaussian_fit(naive_bayes, wiki_df, wiki_target)
 
     twiki_df = pd.DataFrame()
-    twiki_df["height"] = [6, 6.5]
-    twiki_df["weight"] = [130, 185]
-    twiki_df["foot_size"] = [8, 11]
+    twiki_df["height"] = [6]
+    twiki_df["weight"] = [130]
+    twiki_df["foot_size"] = [8]
     twiki_target = pd.Series(["male", "male"])
 
     print(gaussian_predict(naive_bayes, twiki_df, twiki_target))
