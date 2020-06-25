@@ -7,9 +7,9 @@ from helper import gaussian_numerator
 
 
 def gaussian_fit(naive_bayes, X, y):
-    assert isinstance(naive_bayes, NaiveBayes), "Please pass a valid model"
+   # assert isinstance(naive_bayes, NaiveBayes), "Please pass a valid model"
     assert isinstance(X, pd.DataFrame), "Please pass a valid data frame."
-    assert X.shape[0] == y.shape[0], "The dimensions of the input do not match."
+ #   assert X.shape[0] == y.shape[0], "The dimensions of the input do not match."
 
     # get n, get classes
     n = X.shape[0]
@@ -39,7 +39,6 @@ def gaussian_fit(naive_bayes, X, y):
         summary_df = pd.concat([subclass_means, subclass_stds], axis=1)
         class_summary_dfs.append(summary_df)
 
-    naive_bayes.n = n
     naive_bayes.classes = classes #titles
     naive_bayes.class_freqs = class_freqs #frequences
     naive_bayes.summary_dfs = class_summary_dfs #data frames with sd, mean
@@ -52,9 +51,9 @@ def gaussian_predict(naive_bayes, X, y):
     Takes a data frame of observed feature values and a data frame of targets
     in order to predict the probabilities of classes.
     """
-    assert isinstance(naive_bayes, NaiveBayes), "Please pass a valid model"
+  #  assert isinstance(naive_bayes, NaiveBayes), "Please pass a valid model"
     assert isinstance(X, pd.DataFrame), "Please pass a valid data frame."
-    assert X.shape[0] == y.shape[0], "The dimensions of the input do not match."
+ #   assert X.shape[0] == y.shape[0], "The dimensions of the input do not match."
 
     all_predictions = []
     for i in range(y.shape[0]):
@@ -100,7 +99,7 @@ if __name__ == "__main__":
     twiki_df["height"] = [6]
     twiki_df["weight"] = [130]
     twiki_df["foot_size"] = [8]
-    twiki_target = pd.Series(["male", "male"])
+    twiki_target = pd.Series(["male"])
 
     print(gaussian_predict(naive_bayes, twiki_df, twiki_target))
 #    [6.197071843878093e-09, 0.0005377909183630022]
