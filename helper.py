@@ -17,6 +17,6 @@ def gaussian_numerator(obs, mean, sd):
     male = gaussian_numerator(observedf1, mean of feature 1 in training set,
     sd of f1 in training set) multiplied across all features.
     """
-    first_term = 1 / ((2 * math.pi * sd**2)**(1/2))
+    coefficient = 1 / ((2 * math.pi * sd**2)**(1/2))
     exponent = math.exp((-(obs - mean)**2)/(2 * sd**2))
-    return first_term * exponent
+    return coefficient * exponent

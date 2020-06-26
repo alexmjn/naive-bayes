@@ -29,6 +29,11 @@ class NaiveBayes:
         return
 
     def predict(self, X, y):
+        """Use the fitted model object to calculate predictions for new items.
+
+        Takes a data frame of observed feature values and a data frame of targets
+        in order to predict the probabilities of classes.
+        """
         predictions = []
         for i in range(y.shape[0]):
             class_preds = []
@@ -47,7 +52,7 @@ class NaiveBayes:
             max_class_index = class_preds.index(max(class_preds))
             predictions.append(self.classes[max_class_index])
             print(class_preds)
-        return pd.Series(predictions), class_preds
+        return pd.Series(predictions)
 
 
 
