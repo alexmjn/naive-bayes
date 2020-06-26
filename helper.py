@@ -1,3 +1,4 @@
+"""A helper module to avoid cluttering the main class file."""
 import math
 
 def gaussian_numerator(obs, mean, sd):
@@ -7,14 +8,13 @@ def gaussian_numerator(obs, mean, sd):
     and the sample mean and sample standard deviation of that variable as
     calculated in the training set. Plugs that data into the formula for
     normal/Gaussian distribution and returns a posterior probability density
-    for
-    observing this value for this feature under the assumption of a particular
+    for observing this value for this feature under the assumption of a particular
     class label.
 
     An example would be: if we're using Naive Bayes to categorize a person as
     male or female, this would be a helper function that generates one part
     of the chain of independent feature posterior densities. Probability of
-    male = gaussian_numerator(observedf1, mean of feature 1 in training set,
+    male = gaussian_numerator(observed f1, mean of feature 1 in training set,
     sd of f1 in training set) multiplied across all features.
     """
     coefficient = 1 / ((2 * math.pi * sd**2)**(1/2))
